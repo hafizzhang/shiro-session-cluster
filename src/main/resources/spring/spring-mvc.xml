@@ -1,0 +1,60 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd 
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+	
+	<!-- 配置视图解析器
+		解析jsp视图，默认使用jstl标签，classpath下得有jstl包
+	 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<!-- 配置jsp文件的前缀和后缀 -->
+		<property name="prefix" value="/WEB-INF/jsp/"/>
+		<property name="suffix" value=".jsp"/>
+	</bean>
+	
+	<!--配置注解控制器映射器-->
+	<!--<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"/>-->
+	<!--配置注解控制器映射器-->
+	<!--<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>-->
+	
+	<!-- 使用mvc:annotation-driven代替上边的 注解控制器适配器 和 注解控制器映射器 配置，
+		mvc:annotation-driven默认加载了很多参数绑定方法，比如：
+		json转换器就默认加载了，如果使用mvc:annotation-driven就不用再进行上面RequestMappingHandlerAdapter和RequestMappingHandlerMapping的配置
+		实际开发过程中往往使用mvc:annotation-driven
+	-->
+	<!-- 扫描注解驱动，如:@Required, @Autowired, @PostConstruct, @PersistenceContext, @ Resource, @ PreDestroy.... -->
+	<!--<context:annotation-config />-->
+	
+	<!-- 扫描mvc注解驱动，如：@RequestMapping, @Controller,@RequestBody,@ResponseBody.... -->
+	<mvc:annotation-driven />
+	
+	<!-- 配置组件扫描，springmvc容器中只扫描Controller注解 -->
+	<context:component-scan base-package="com.hafiz.www">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+	
+	<!-- 配置全局异常处理器
+		只要实现了HandlerExceptionResolver接口就是全局异常处理器类，每个系统只能有一个全局异常处理器类
+	 -->
+	 <!--<bean class="com.hafiz.www.exception.CustomExceptionResolver"/>-->
+	 
+	 <!-- 配置文件上传 -->
+	 <bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 设置上传文件的最大尺寸为5MB -->
+		<property name="maxUploadSize">
+			<value>5242880</value>
+		</property>
+	</bean>
+	 
+	 <!-- 配置静态资源文件的解析，包括js、css、img.... -->
+	 <mvc:resources location="/js/" mapping="/js/**"/><!-- /**表示拦截文件夹下的所有文件，包括子路径 -->
+	 <mvc:resources location="/css/" mapping="/css/**"/>
+	 <mvc:resources location="/img/" mapping="/img/**"/>
+
+</beans>

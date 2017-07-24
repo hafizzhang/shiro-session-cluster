@@ -1,0 +1,58 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+	<!-- 加载配置文件jdbc.properties中的内容，jdbc.properties中key的命名要有一定的特殊规则 -->
+	<!--<context:property-placeholder location="classpath:jdbc.properties"/>-->
+	<!-- 配置数据源,数据库连接池 -->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+		<!--数据库驱动-->
+		<property name="driverClassName" value="${jdbc.driver}"/>
+		<!--数据库链接地址-->
+		<property name="url" value="${jdbc.url}"/>
+		<!--数据库用户名-->
+		<property name="username" value="${jdbc.username}"/>
+		<!--数据库连接密码-->
+		<property name="password" value="${jdbc.password}"/>
+		<!--连接池初始化大小-->
+		<property name="initialSize" value="${jdbc.initialSize}"/>
+		<!--连接池最小数量-->
+		<property name="minIdle" value="${jdbc.minIdle}" />
+		<!--连接池最大数量-->
+		<property name="maxActive" value="${jdbc.maxActive}"/>
+		<!--连接池等待超时时间-->
+		<property name="maxWait" value="${jdbc.maxWait}"/>
+		<!--配置间隔多久才进行一次检测，检测需要关闭空闲连接,单位是毫秒-->
+		<property name="timeBetweenEvictionRunsMillis" value="${jdbc.timeBetweenEvictionRunsMillis}"/>
+		<property name="minEvictableIdleTimeMillis" value="${jdbc.minEvictableIdleTimeMillis}"/>
+		<property name="testWhileIdle" value="${jdbc.testWhileIdle}"/>
+		<property name="validationQuery" value="${jdbc.validationQuery}"/>
+		<property name="testOnReturn" value="${jdbc.testOnReturn}"/>
+		<!--打开PSCache,并且制定每个连接上PSCache的大小-->
+		<property name="poolPreparedStatements" value="${jdbc.poolPreparedStatements}"/>
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="${jdbc.maxPoolPreparedStatementPerConnectionSize}"/>
+		<!--配置监控统计拦截的filters-->
+		<property name="filters" value="${jdbc.filters}"/>
+	</bean>
+
+	<!-- 配置sqlSessionFactory交由spring进行管理 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 设置数据源引用 -->
+		<property name="dataSource" ref="dataSource"></property>
+		<!-- 加载mybatis的全局配置文件路径 -->
+		<property name="configLocation" value="classpath:mybatis/mybatis-config.xml"></property>
+		<property name="mapperLocations" value="classpath:mapper/*.xml"/>
+	</bean>
+
+	<!-- 配置mapper接口扫描器 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 要扫描的包的名称，有多个包时，包名之间用半角逗号隔开 -->
+		<property name="basePackage" value="com.hafiz.www.mapper"></property>
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+	</bean>
+
+</beans>
